@@ -1,0 +1,32 @@
+[
+  {
+    "titulo": "Tesouro IPCA+ 2035",
+    "venda": 2369.8,
+    "atualizado": "31/07/2026"
+  },
+  {
+    "titulo": "Tesouro IPCA+ 2032",
+    "venda": 2920.94,
+    "atualizado": "31/07/2026"
+  },
+  {
+    "titulo": "Tesouro IPCA+ 2035 c/ Juros",
+    "venda": 4162.58,
+    "atualizado": "31/07/2026"
+  },
+  {
+    "titulo": "Tesouro IPCA+ 2029",
+    "venda": 3797.08,
+    "atualizado": "31/07/2026"
+  },
+  {
+    "titulo": "Tesouro Selic 2029",
+    "venda": 19535.14,
+    "atualizado": "31/07/2026"
+  },
+  {
+    "titulo": "Tesouro Selic 2031",
+    "venda": 19484.36,
+    "atualizado": "31/07/2026"
+  }
+]
