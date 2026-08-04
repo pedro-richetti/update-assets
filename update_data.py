@@ -2,6 +2,9 @@ import pandas as pd
 import json
 from datetime import datetime
 import os
+import requests
+import io
+import time
 
 url = "https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv"
 
@@ -16,10 +19,32 @@ titulos_desejados = {
     ("Tesouro Selic", "2031"): "Tesouro Selic 2031",
 }
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
+
+max_retries = 3
+retry_delay = 5
+csv_content = None
+
+for attempt in range(max_retries):
+    try:
+        response = requests.get(url, headers=headers, timeout=30)
+        response.raise_for_status()
+        csv_content = response.text
+        break
+    except Exception as e:
+        print(f"Attempt {attempt + 1} failed: {e}")
+        if attempt < max_retries - 1:
+            time.sleep(retry_delay)
+        else:
+            print(f"Failed to fetch CSV after {max_retries} attempts.")
+            exit(1)
+
 try:
-    df = pd.read_csv(url, sep=";", decimal=",")
+    df = pd.read_csv(io.StringIO(csv_content), sep=";", decimal=",")
 except Exception as e:
-    print(f"Error reading CSV: {e}")
+    print(f"Error parsing CSV: {e}")
     exit(1)
 
 # O CSV tem colunas: 'Tipo Titulo', 'Data Vencimento', 'Data Base', 'Taxa Compra Manha', 'Taxa Venda Manha', 'PU Compra Manha', 'PU Venda Manha', 'PU Base Manha'
