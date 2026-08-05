@@ -6,6 +6,47 @@ import requests
 import io
 import time
 
+import zipfile
+import datetime
+
+def fetch_fund_quota(cnpj):
+    now = datetime.datetime.now()
+    # Tenta o mes atual e o mes anterior (se o mes virou hoje, o csv pode nao estar pronto)
+    for months_ago in [0, 1]:
+        # Logica para subtrair meses
+        # usando timedelta aproximado (30 dias) ou replace no mes (precisa tratar mudanca de ano)
+        year = now.year
+        month = now.month - months_ago
+        if month <= 0:
+            month += 12
+            year -= 1
+
+        date_str = f"{year}{month:02d}"
+        url = f'https://dados.cvm.gov.br/dados/FI/DOC/INF_DIARIO/DADOS/inf_diario_fi_{date_str}.zip'
+        try:
+            resp = requests.get(url, timeout=30)
+            if resp.status_code == 200:
+                with zipfile.ZipFile(io.BytesIO(resp.content)) as z:
+                    filename = z.namelist()[0]
+                    with z.open(filename) as zf:
+                        df_fundo_full = pd.read_csv(zf, sep=';')
+                        if 'CNPJ_FUNDO_CLASSE' in df_fundo_full.columns:
+                            col_cnpj = 'CNPJ_FUNDO_CLASSE'
+                        elif 'CNPJ_FUNDO' in df_fundo_full.columns:
+                            col_cnpj = 'CNPJ_FUNDO'
+                        else:
+                            continue
+
+                        df_fundo = df_fundo_full[df_fundo_full[col_cnpj] == cnpj]
+                        if not df_fundo.empty:
+                            latest_date = df_fundo['DT_COMPTC'].max()
+                            latest_data = df_fundo[df_fundo['DT_COMPTC'] == latest_date].iloc[0]
+                            date_obj = datetime.datetime.strptime(latest_date, '%Y-%m-%d')
+                            return date_obj.strftime('%d/%m/%Y'), float(latest_data['VL_QUOTA'])
+        except Exception as e:
+            print(f"Erro ao buscar cota do fundo em {date_str}: {e}")
+    return None, None
+
 url = "https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv"
 
 # Os titulos desejados e como formata-los
@@ -72,6 +113,17 @@ for index, row in df_recente.iterrows():
 # Garantir a ordem original desejada
 ordem_desejada = list(titulos_desejados.values())
 resultados.sort(key=lambda x: ordem_desejada.index(x["titulo"]) if x["titulo"] in ordem_desejada else 999)
+
+
+# Buscar cota do fundo REAL INVESTOR
+cnpj_real_investor = "10.500.884/0001-05"
+data_fundo, cota_fundo = fetch_fund_quota(cnpj_real_investor)
+if data_fundo and cota_fundo:
+    resultados.append({
+        "titulo": "REAL INVESTOR FIC FIA - BDR NIVEL I",
+        "venda": cota_fundo,
+        "atualizado": data_fundo
+    })
 
 with open('dados.json', 'w', encoding='utf-8') as f:
     json.dump(resultados, f, ensure_ascii=False, indent=2)
