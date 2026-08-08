@@ -11,28 +11,6 @@ import datetime
 
 import re
 
-def fetch_fund_quota_mr(slug_fundo):
-    url = f'https://maisretorno.com/fundo/{slug_fundo}'
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-    try:
-        resp = requests.get(url, headers=headers, timeout=30)
-        if resp.status_code == 200:
-            html = resp.text
-            # Encontrar array de cotas do grafico, no formato [timestamp, valor_cota]
-            matches = re.findall(r'\[(\d{13}),([0-9.]+)\]', html)
-            if matches:
-                matches.sort(key=lambda x: int(x[0]))
-                last_match = matches[-1]
-                ts = int(last_match[0]) / 1000
-                cota = float(last_match[1])
-                dt = datetime.datetime.fromtimestamp(ts)
-                return dt.strftime('%d/%m/%Y'), cota
-    except Exception as e:
-        print(f"Erro ao buscar cota do fundo {slug_fundo} no MaisRetorno: {e}")
-    return None, None
-
 def fetch_fund_quota(cnpj):
     now = datetime.datetime.now()
     # Tenta o mes atual e o mes anterior (se o mes virou hoje, o csv pode nao estar pronto)
@@ -141,13 +119,9 @@ resultados.sort(key=lambda x: ordem_desejada.index(x["titulo"]) if x["titulo"] i
 
 # Buscar cota do fundo REAL INVESTOR
 cnpj_real_investor = "10.500.884/0001-05"
-slug_real_investor = "real-investor-fic-fia-bdr-nivel-i"
 
-# Tenta buscar do MaisRetorno primeiro (mais atualizado)
-data_fundo, cota_fundo = fetch_fund_quota_mr(slug_real_investor)
-if not data_fundo or not cota_fundo:
-    # Fallback para a CVM
-    data_fundo, cota_fundo = fetch_fund_quota(cnpj_real_investor)
+# Buscar cota da CVM
+data_fundo, cota_fundo = fetch_fund_quota(cnpj_real_investor)
 
 if data_fundo and cota_fundo:
     resultados.append({
