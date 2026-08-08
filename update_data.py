@@ -120,7 +120,7 @@ resultados.sort(key=lambda x: ordem_desejada.index(x["titulo"]) if x["titulo"] i
 # Buscar cota do fundo REAL INVESTOR
 cnpj_real_investor = "10.500.884/0001-05"
 
-# Buscar cota da CVM
+# Buscar cota da CVM (Real Investor)
 data_fundo, cota_fundo = fetch_fund_quota(cnpj_real_investor)
 
 if data_fundo and cota_fundo:
@@ -128,6 +128,19 @@ if data_fundo and cota_fundo:
         "titulo": "REAL INVESTOR FIC FIA - BDR NIVEL I",
         "venda": cota_fundo,
         "atualizado": data_fundo
+    })
+
+# Buscar cota do fundo BTG Pactual Reference FMP Eletrobras RL
+cnpj_btg_eletrobras = "45.560.774/0001-05"
+
+# Buscar cota da CVM (BTG Eletrobras)
+data_fundo_btg, cota_fundo_btg = fetch_fund_quota(cnpj_btg_eletrobras)
+
+if data_fundo_btg and cota_fundo_btg:
+    resultados.append({
+        "titulo": "BTG PACTUAL REFERENCE FMP ELETROBRAS RL",
+        "venda": cota_fundo_btg,
+        "atualizado": data_fundo_btg
     })
 
 with open('dados.json', 'w', encoding='utf-8') as f:
