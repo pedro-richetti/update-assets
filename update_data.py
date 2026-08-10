@@ -63,26 +63,57 @@ titulos_desejados = {
 }
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "User-Agent": "TesouroDiretoDataFetcher/1.0 (Automated GitHub Actions Job; Fetching government bond data)"
 }
 
 max_retries = 3
 retry_delay = 5
 csv_content = None
 
+print("Iniciando busca do CSV do Tesouro Direto...")
 for attempt in range(max_retries):
     try:
         response = requests.get(url, headers=headers, timeout=30)
         response.raise_for_status()
         csv_content = response.text
+        print("Sucesso na busca direta.")
         break
     except Exception as e:
-        print(f"Attempt {attempt + 1} failed: {e}")
+        print(f"Tentativa direta {attempt + 1} falhou: {e}")
         if attempt < max_retries - 1:
             time.sleep(retry_delay)
-        else:
-            print(f"Failed to fetch CSV after {max_retries} attempts.")
-            exit(1)
+
+# Se falhou nas tentativas diretas, tenta via proxy
+if not csv_content:
+    print("Busca direta falhou. Tentando via proxies gratuitos...")
+    proxy_url = "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all"
+    try:
+        resp_proxy = requests.get(proxy_url, timeout=15)
+        # Parse the plain text proxy list
+        proxies_list = [p.strip() for p in resp_proxy.text.split('\n') if p.strip()]
+        print(f"{len(proxies_list)} proxies obtidos.")
+
+        for p in proxies_list[:20]:  # Tenta ate 20 proxies
+            proxies = {
+                "http": f"http://{p}",
+                "https": f"http://{p}"
+            }
+            print(f"Tentando proxy {p}...")
+            try:
+                r = requests.get(url, headers=headers, proxies=proxies, timeout=15)
+                if r.status_code == 200 and len(r.text) > 1000:
+                    csv_content = r.text
+                    print(f"Sucesso com proxy {p}.")
+                    break
+            except Exception as e:
+                pass
+
+    except Exception as e:
+        print(f"Erro ao buscar lista de proxies: {e}")
+
+if not csv_content or len(csv_content) < 1000:
+    print(f"Falha ao obter o CSV do Tesouro Direto apos tentativas diretas e por proxy.")
+    exit(1)
 
 try:
     df = pd.read_csv(io.StringIO(csv_content), sep=";", decimal=",")
