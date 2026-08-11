@@ -1,32 +1,42 @@
 [
   {
     "titulo": "Tesouro IPCA+ 2035",
-    "venda": 2400.7,
-    "atualizado": "07/08/2026"
+    "venda": 2411.24,
+    "atualizado": "10/08/2026"
   },
   {
     "titulo": "Tesouro IPCA+ 2032",
-    "venda": 2945.4,
-    "atualizado": "07/08/2026"
+    "venda": 2959.53,
+    "atualizado": "10/08/2026"
   },
   {
     "titulo": "Tesouro IPCA+ 2035 c/ Juros",
-    "venda": 4205.73,
-    "atualizado": "07/08/2026"
+    "venda": 4220.23,
+    "atualizado": "10/08/2026"
   },
   {
     "titulo": "Tesouro IPCA+ 2029",
-    "venda": 3815.13,
-    "atualizado": "07/08/2026"
+    "venda": 3824.24,
+    "atualizado": "10/08/2026"
   },
   {
     "titulo": "Tesouro Selic 2029",
-    "venda": 19587.45,
-    "atualizado": "07/08/2026"
+    "venda": 19598.0,
+    "atualizado": "10/08/2026"
   },
   {
     "titulo": "Tesouro Selic 2031",
-    "venda": 19535.76,
+    "venda": 19545.91,
+    "atualizado": "10/08/2026"
+  },
+  {
+    "titulo": "REAL INVESTOR FIC FIA - BDR NIVEL I",
+    "venda": 25.21997326,
+    "atualizado": "07/08/2026"
+  },
+  {
+    "titulo": "BTG PACTUAL REFERENCE FMP ELETROBRAS RL",
+    "venda": 1.759333872599,
     "atualizado": "07/08/2026"
   }
 ]
