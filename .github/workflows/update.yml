@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 9 * * *' # Executa diariamente as 09:00 UTC
+    - cron: '0 9 * * 1-5' # Executa às 06:00 BRT (09:00 UTC) de segunda a sexta
   workflow_dispatch: # Permite executar manualmente no GitHub
 
 jobs:
