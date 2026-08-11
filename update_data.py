@@ -13,10 +13,9 @@ import re
 
 def fetch_fund_quota(cnpj):
     now = datetime.datetime.now()
-    # Tenta o mes atual e o mes anterior (se o mes virou hoje, o csv pode nao estar pronto)
-    for months_ago in [0, 1]:
-        # Logica para subtrair meses
-        # usando timedelta aproximado (30 dias) ou replace no mes (precisa tratar mudanca de ano)
+    # Try up to 24 months back to ensure we find some data
+    for months_ago in range(0, 25):
+        # Logic to subtract months
         year = now.year
         month = now.month - months_ago
         if month <= 0:
@@ -48,7 +47,6 @@ def fetch_fund_quota(cnpj):
         except Exception as e:
             print(f"Erro ao buscar cota do fundo em {date_str}: {e}")
     return None, None
-
 url = "https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv"
 
 # Os titulos desejados e como formata-los
