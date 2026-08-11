@@ -5,14 +5,10 @@ import os
 import requests
 import io
 import time
-
 import zipfile
-import datetime
-
-import re
 
 def fetch_fund_quota(cnpj):
-    now = datetime.datetime.now()
+    now = datetime.now()
     # Try up to 24 months back to ensure we find some data
     for months_ago in range(0, 25):
         # Logic to subtract months
@@ -42,7 +38,7 @@ def fetch_fund_quota(cnpj):
                         if not df_fundo.empty:
                             latest_date = df_fundo['DT_COMPTC'].max()
                             latest_data = df_fundo[df_fundo['DT_COMPTC'] == latest_date].iloc[0]
-                            date_obj = datetime.datetime.strptime(latest_date, '%Y-%m-%d')
+                            date_obj = datetime.strptime(latest_date, '%Y-%m-%d')
                             return date_obj.strftime('%d/%m/%Y'), float(latest_data['VL_QUOTA'])
         except Exception as e:
             print(f"Erro ao buscar cota do fundo em {date_str}: {e}")
