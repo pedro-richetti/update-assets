@@ -9,6 +9,7 @@ import zipfile
 
 def fetch_fund_quota(cnpj):
     now = datetime.now()
+    cnpj_digits = ''.join(filter(str.isdigit, cnpj))
     # Try up to 24 months back to ensure we find some data
     for months_ago in range(0, 25):
         # Logic to subtract months
@@ -34,7 +35,7 @@ def fetch_fund_quota(cnpj):
                         else:
                             continue
 
-                        df_fundo = df_fundo_full[df_fundo_full[col_cnpj] == cnpj]
+                        df_fundo = df_fundo_full[df_fundo_full[col_cnpj].astype(str).str.replace(r'\D', '', regex=True) == cnpj_digits]
                         if not df_fundo.empty:
                             latest_date = df_fundo['DT_COMPTC'].max()
                             latest_data = df_fundo[df_fundo['DT_COMPTC'] == latest_date].iloc[0]
