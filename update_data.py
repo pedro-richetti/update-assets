@@ -53,7 +53,7 @@ titulos_desejados = {
     ("Tesouro IPCA+", "2032"): "Tesouro IPCA+ 2032",
     ("Tesouro IPCA+ com Juros Semestrais", "2035"): "Tesouro IPCA+ 2035 c/ Juros",
     ("Tesouro IPCA+", "2029"): "Tesouro IPCA+ 2029",
-    ("Tesouro Selic", "2029"): "Tesouro Selic 2029",
+    ("Tesouro Selic", "2040"): "Tesouro Selic 2040",
     ("Tesouro Selic", "2031"): "Tesouro Selic 2031",
 }
 
